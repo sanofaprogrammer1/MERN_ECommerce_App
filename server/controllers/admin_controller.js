@@ -2,10 +2,14 @@ const Product = require('../models/product');
 const User  = require('../models/user');
 module.exports = {
     getAdminUsers(req, res) {
-        User.find().exec((err, users) => {
-            if(err) console.log('Find Admin Users Error---------------', err);
-            res.status(200).json({users});
-        })
+        User.find().then(users => {
+        console.log("all users: ", users);
+        res.status(200).json({ users });
+      })
+      .catch(err => {
+        console.log("Error fetching users : ", err);
+        res.status(400).json({ err });
+      });
     }, 
     createProduct(req, res) {
         //Destruct the values sent in from frontend from req.body;
@@ -32,18 +36,17 @@ module.exports = {
         // also add picture to destruct from req.body ;------------------------------
         const { name, description, price, picture } = req.body;
         //Find the product, and update it's properties
-        Product.findById(id).exec((err, product) => {
-            if(err) console.log('Updated Product-----------------', err);
-            product.name = name;
-            product.description = description;
-            product.price = price;
-            //Also update picture. 
-            product.picture = picture;
-            //Save the product with updated data.
-            product.save();
-            //THen send back the data, just for testing purposes.
-            res.status(200).json({product});
-        })
+        Product.findById(id).then(product => {
+        //Update Product
+        product.name = req.body.name;
+        product.description = req.body.description;
+        product.price = req.body.price;
+        product
+          .save()
+          .then(product => res.status(200).json(product))
+          .catch(err => console.log("Error updating product : ", err));
+      })
+      .catch(err => console.log("Error finding product : ", err));
     }, 
     deleteProduct(req, res) {
         //Destruct the id from the request params, since you have to delete a specific product.
