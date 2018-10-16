@@ -40,6 +40,7 @@ mongoose.connect(process.env.CONNECTION_STRING,
 });
 //Middleware 
 //For initializing the req.body. If the middleware is not used, the req.body is undefined.
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //For storing cookies for the user.
